@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage {{ site.site_name }} | NEXUS Hosting</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Orbitron', monospace;
+            background: #0a0a0a;
+            color: #0f0;
+            padding: 2rem;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #0f0;
+        }
+        .back-link { color: #0f0; text-decoration: none; }
+        .back-link:hover { text-decoration: underline; }
+        .card {
+            background: rgba(0,30,0,0.6);
+            border: 1px solid #0f0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .url-box {
+            background: rgba(0,0,0,0.8);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .url-text {
+            font-family: monospace;
+            font-size: 1.2rem;
+            flex: 1;
+        }
+        button, .upload-btn {
+            background: #0f0;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            font-family: 'Orbitron', monospace;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        button:hover { background: #0a0; }
+        .file-list {
+            margin-top: 1rem;
+        }
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+            border-bottom: 1px solid #2a2;
+        }
+        .delete-btn { color: #f00; text-decoration: none; }
+        .delete-site-btn {
+            background: #f00;
+            color: white;
+            margin-left: 1rem;
+        }
+        .delete-site-btn:hover { background: #c00; }
+        input, select {
+            background: rgba(0,0,0,0.8);
+            border: 1px solid #0f0;
+            color: #0f0;
+            padding: 10px;
+            font-family: monospace;
+        }
+        @media (max-width: 768px) {
+            body { padding: 1rem; }
+            .url-text { font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-crown"></i> Manage: {{ site.site_name }}</h1>
+            <a href="/" class="back-link"><i class="fas fa-arrow-left"></i> Back to Home</a>
+        </div>
+        
+        <div class="card">
+            <h3><i class="fas fa-link"></i> Your Website URL</h3>
+            <div class="url-box">
+                <span class="url-text">🔗 /site/{{ site.subdomain }}</span>
+                <button onclick="copyUrl()"><i class="fas fa-copy"></i> Copy</button>
+                <a href="/site/{{ site.subdomain }}" target="_blank">
+                    <button><i class="fas fa-external-link-alt"></i> Visit</button>
+                </a>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h3><i class="fas fa-upload"></i> Upload Files</h3>
+            <form method="POST" action="/upload-file/{{ site.id }}" enctype="multipart/form-data" style="margin: 1rem 0;">
+                <input type="file" name="file" required>
+                <button type="submit"><i class="fas fa-upload"></i> Upload File</button>
+            </form>
+            
+            <h4>Or Upload ZIP (entire website)</h4>
+            <form method="POST" action="/upload-zip/{{ site.id }}" enctype="multipart/form-data" style="margin: 1rem 0;">
+                <input type="file" name="zipfile" accept=".zip" required>
+                <button type="submit"><i class="fas fa-file-archive"></i> Upload & Extract ZIP</button>
+            </form>
+        </div>
+        
+        <div class="card">
+            <h3><i class="fas fa-file"></i> Your Files</h3>
+            <div class="file-list">
+                {% for file in files %}
+                <div class="file-item">
+                    <span><i class="fas fa-file"></i> {{ file.filename }}</span>
+                    <a href="/delete-file/{{ site.id }}/{{ file.id }}" class="delete-btn" onclick="return confirm('Delete this file?')">
+                        <i class="fas fa-trash"></i> Delete
+                    </a>
+                </div>
+                {% else %}
+                <p style="color: #6f6;">No files uploaded yet. Upload your HTML/CSS/JS files above!</p>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div class="card">
+            <h3><i class="fas fa-chart-line"></i> Statistics</h3>
+            <p>📊 Total Views: <strong>{{ site.views }}</strong></p>
+            <p>📅 Created: {{ site.created_at.strftime('%Y-%m-%d') }}</p>
+        </div>
+        
+        <div class="card">
+            <h3><i class="fas fa-exclamation-triangle"></i> Danger Zone</h3>
+            <a href="/delete-site/{{ site.id }}" onclick="return confirm('⚠️ WARNING: This will permanently delete your entire site! Continue?')">
+                <button class="delete-site-btn"><i class="fas fa-trash-alt"></i> Delete Entire Site</button>
+            </a>
+        </div>
+    </div>
+    
+    <script>
+        function copyUrl() {
+            const url = window.location.origin + '/site/{{ site.subdomain }}';
+            navigator.clipboard.writeText(url);
+            alert('URL copied: ' + url);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡ NEXUS Hosting | Free Static Website Hosting</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Orbitron', monospace;
+            background: #000;
+            color: #0f0;
+            overflow-x: hidden;
+        }
+        
+        #matrix-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.3;
+        }
+        
+        .content {
+            position: relative;
+            z-index: 1;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .glitch-header {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(0,0,0,0.7);
+            border-bottom: 2px solid #0f0;
+            backdrop-filter: blur(5px);
+            margin-bottom: 2rem;
+            border-radius: 12px;
+        }
+        
+        .glitch {
+            font-size: 3rem;
+            font-weight: bold;
+            animation: glitch 0.3s infinite;
+        }
+        
+        @keyframes glitch {
+            0% { text-shadow: 0.05em 0 0 rgba(255,0,0,0.75), -0.05em -0.025em 0 rgba(0,255,0,0.75); }
+            50% { text-shadow: -0.05em 0.025em 0 rgba(255,0,0,0.75), 0.05em 0 0 rgba(0,255,0,0.75); }
+            100% { text-shadow: 0.05em 0 0 rgba(255,0,0,0.75), -0.05em -0.025em 0 rgba(0,255,0,0.75); }
+        }
+        
+        .subtitle { color: #0f0; font-size: 1rem; letter-spacing: 4px; margin-top: 10px; }
+        
+        .stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .stat-card {
+            background: rgba(0,0,0,0.8);
+            border: 1px solid #0f0;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-number { font-size: 2rem; font-weight: bold; color: #0f0; }
+        .stat-label { font-size: 0.8rem; text-transform: uppercase; }
+        
+        .create-form {
+            background: rgba(0,0,0,0.75);
+            border: 1px solid #0f0;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .form-group { margin-bottom: 1rem; }
+        label { display: block; margin-bottom: 0.5rem; font-size: 0.8rem; }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            background: rgba(0,0,0,0.8);
+            border: 1px solid #0f0;
+            color: #0f0;
+            font-family: monospace;
+            border-radius: 4px;
+        }
+        
+        button {
+            background: #0f0;
+            color: black;
+            border: none;
+            padding: 12px 24px;
+            font-family: 'Orbitron', monospace;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        
+        button:hover { background: #0a0; transform: scale(1.02); }
+        
+        .sites-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .site-card {
+            background: rgba(0,20,0,0.6);
+            border: 1px solid #0f0;
+            border-radius: 8px;
+            padding: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .site-card:hover { transform: translateY(-5px); box-shadow: 0 0 20px rgba(0,255,0,0.3); }
+        .site-name { font-size: 1.2rem; font-weight: bold; margin-bottom: 0.5rem; }
+        .site-meta { font-size: 0.7rem; color: #6f6; margin: 0.5rem 0; }
+        .visit-btn {
+            background: #0f0;
+            color: black;
+            padding: 6px 12px;
+            text-decoration: none;
+            font-size: 0.8rem;
+            border-radius: 4px;
+            display: inline-block;
+        }
+        
+        .feature {
+            display: inline-block;
+            padding: 4px 8px;
+            background: rgba(0,255,0,0.2);
+            border-radius: 4px;
+            font-size: 0.7rem;
+            margin-right: 5px;
+        }
+        
+        @media (max-width: 768px) {
+            .glitch { font-size: 2rem; }
+            .content { padding: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="matrix-canvas"></canvas>
+    
+    <div class="content">
+        <div class="glitch-header">
+            <div class="glitch">⚡ NEXUS HOSTING</div>
+            <div class="subtitle">// FREE STATIC WEBSITE HOSTING PLATFORM //</div>
+        </div>
+        
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-number" id="stat-sites">{{ total_sites }}</div>
+                <div class="stat-label">Hosted Sites</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="stat-views">{{ total_views }}</div>
+                <div class="stat-label">Total Views</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">∞</div>
+                <div class="stat-label">Free Forever</div>
+            </div>
+        </div>
+        
+        <div class="create-form">
+            <h3><i class="fas fa-plus-circle"></i> Create Your Free Website</h3>
+            <form method="POST" action="/create-site">
+                <div class="form-group">
+                    <label>Site Name</label>
+                    <input type="text" name="site_name" placeholder="My Awesome Site" required>
+                </div>
+                <div class="form-group">
+                    <label>Subdomain (your-site.nexus.com)</label>
+                    <input type="text" name="subdomain" placeholder="myawesomesite" required>
+                </div>
+                <div class="form-group">
+                    <label>Your Name</label>
+                    <input type="text" name="owner_name" required>
+                </div>
+                <div class="form-group">
+                    <label>Your Email</label>
+                    <input type="email" name="owner_email" required>
+                </div>
+                <button type="submit"><i class="fas fa-rocket"></i> Create Website →</button>
+            </form>
+        </div>
+        
+        <div class="section">
+            <h2><i class="fas fa-globe"></i> Hosted Sites</h2>
+            <div class="sites-grid">
+                {% for site in sites %}
+                <div class="site-card">
+                    <div class="site-name">{{ site.site_name }}</div>
+                    <div class="site-meta">
+                        <span class="feature"><i class="fas fa-user"></i> {{ site.owner_name }}</span>
+                        <span class="feature"><i class="fas fa-eye"></i> {{ site.views }} views</span>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <a href="/site/{{ site.subdomain }}" target="_blank" class="visit-btn"><i class="fas fa-external-link-alt"></i> Visit</a>
+                        <a href="/dashboard/{{ site.id }}" class="visit-btn" style="background: #333; color: #0f0; margin-left: 5px;"><i class="fas fa-cog"></i> Manage</a>
+                    </div>
+                </div>
+                {% else %}
+                <div style="text-align: center; padding: 2rem; color: #6f6;">No sites yet. Create the first one!</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*';
+        const fontSize = 16;
+        const columns = canvas.width / fontSize;
+        const drops = [];
+        for (let i = 0; i < columns; i++) drops[i] = 1;
+        
+        function draw() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#f00';
+            ctx.font = fontSize + 'px monospace';
+            for (let i = 0; i < drops.length; i++) {
+                const text = chars[Math.floor(Math.random() * chars.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        }
+        setInterval(draw, 35);
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>
